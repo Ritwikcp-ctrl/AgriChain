@@ -1,159 +1,247 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+# 🌾 AgriChain
 
-## Using this example
+**Decentralized Infrastructure for Agricultural Commerce & Governance**
 
-Run the following command:
+[![Next.js](https://img.shields.io/badge/Next.js-App_Router-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Solidity](https://img.shields.io/badge/Solidity-Smart_Contracts-363636?style=for-the-badge&logo=solidity&logoColor=white)](https://soliditylang.org/)
+[![Solana](https://img.shields.io/badge/Solana-Programs-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solana.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
 
-```sh
-npx create-turbo@latest
+*A single on-chain-anchored platform for crop trade, price transparency, tool sharing, and agricultural governance.*
+
+[Overview](#-overview) • [Modules](#-core-modules) • [Architecture](#-architecture) • [Getting Started](#-getting-started) • [Environment](#-environment-variables) • [Database](#-database-schema) • [Contracts](#-smart-contracts) • [Roadmap](#-roadmap) • [Contributing](#-contributing)
+
+</div>
+
+---
+
+## 📖 Overview
+
+**AgriChain** is a production blockchain-backed platform built to remove intermediaries from agricultural commerce and give farmers direct market access, verifiable transaction history, and a voice in agricultural policy through on-chain elections.
+
+Every transaction — a crop sale, a tool rental, a vote — is written to chain and mirrored in a relational data layer for fast querying, giving the platform both the auditability of a blockchain and the performance of a conventional application.
+
+> **Status:** Active development — pre-launch. Interfaces and contract addresses in this document are subject to change until v1.0.0.
+
+---
+
+## 🧩 Core Modules
+
+| Module | Description |
+|---|---|
+| 🛒 **Direct Crop Marketplace** | Farmers list crops directly to buyers/merchants, cutting out middlemen. |
+| 📊 **Real-Time Price Analytics** | Live market pricing to help farmers time sales and negotiate fairly. |
+| 🔗 **On-Chain Transactions** | Crop and tool-rental payments recorded on Ethereum/Solana with `tx_hash` provenance. |
+| 🔧 **Peer-to-Peer Tool Rentals** | Farmers list and rent equipment (Lessor/Lessee roles) without third-party platforms. |
+| 🗳️ **On-Chain Agricultural Voting** | State-level, tamper-proof voting for Agriculture Minister elections. |
+
+---
+
+## 🏗️ Architecture
+
+```
+                         ┌───────────────────────────┐
+                         │        Client (Web)        │
+                         │  Next.js App Router + TS   │
+                         │      Tailwind CSS UI       │
+                         └──────────────┬─────────────┘
+                                        │
+                              REST / Server Actions
+                                        │
+                         ┌──────────────▼─────────────┐
+                         │        Application Layer     │
+                         │   Next.js Route Handlers     │
+                         └──────┬─────────────────┬────┘
+                                │                 │
+                    ┌───────────▼───────┐   ┌─────▼──────────────┐
+                    │     PostgreSQL      │   │   Blockchain Layer   │
+                    │  Users · Crop ·     │   │  Solidity (EVM) /    │
+                    │  Tools · Transaction│   │  Solana Programs     │
+                    └────────────────────┘   └─────────────────────┘
 ```
 
-## What's inside?
+- **Off-chain (PostgreSQL):** user profiles, role data (Lessor/Lessee/Merchant), crop and tool listings, cached analytics.
+- **On-chain (Ethereum/Solana):** transaction settlement, `tx_hash` provenance, voting ballots.
+- Every `TRANSACTION` record links an off-chain row to its on-chain proof, so the UI stays fast while remaining independently verifiable.
 
-This Turborepo includes the following packages/apps:
+---
 
-### Apps and Packages
+## 🗃️ Database Schema
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+Core entities, with role-based inheritance:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+```
+User
+ ├── Lessor    (lists Tools for rent)
+ ├── Lessee    (rents Tools)
+ └── Merchant  (buys/sells Crop)
 
-### Utilities
+Crop
+ ├── owner_id      → User
+ ├── price
+ └── listing_status
 
-This Turborepo has some additional tools already setup for you:
+Tools
+ ├── lessor_id     → User
+ ├── availability
+ └── rental_rate
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
+Transaction
+ ├── type           (crop_sale | tool_rental)
+ ├── ref_id          → Crop.id | Tools.id
+ ├── from_user_id    → User
+ ├── to_user_id      → User
+ ├── amount
+ ├── tx_hash         (on-chain proof)
+ ├── chain           (ethereum | solana)
+ └── status          (pending | confirmed | failed)
 ```
 
-Without global `turbo`, use your package manager:
+> Full ERD available in [`/docs/erd.md`](./docs/erd.md).
 
-```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+---
+
+## ⚙️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| Database | PostgreSQL |
+| Smart Contracts | Solidity (EVM), Solana Programs (Rust) |
+| Auth | *(fill in — e.g. NextAuth / custom JWT)* |
+| Hosting | *(fill in — e.g. Vercel + Railway/Supabase)* |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js ≥ 18.x
+- PostgreSQL ≥ 14
+- pnpm / npm / yarn
+- A funded wallet + RPC endpoint for testnet deployment (Ethereum Sepolia / Solana Devnet)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/<your-org>/agrichain.git
+cd agrichain
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+
+# Run database migrations
+npm run db:migrate
+
+# Start the development server
+npm run dev
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+The app will be available at `http://localhost:3000`.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo build --filter=docs
+## 🔐 Environment Variables
+
+Create a `.env.local` file with the following:
+
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/agrichain
+
+# Blockchain — Ethereum
+NEXT_PUBLIC_ETH_RPC_URL=
+ETH_PRIVATE_KEY=
+CONTRACT_ADDRESS_ETH=
+
+# Blockchain — Solana
+NEXT_PUBLIC_SOLANA_RPC_URL=
+SOLANA_PROGRAM_ID=
+
+# Auth
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3000
 ```
 
-Without global `turbo`:
+> **Never commit `.env.local`.** Rotate any keys that were ever pushed to a public branch.
 
-```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+---
+
+## ⛓️ Smart Contracts
+
+| Contract / Program | Chain | Purpose | Address |
+|---|---|---|---|
+| `AgriTransaction` | Ethereum | Crop & tool-rental settlement | `TBD` |
+| `AgriVote` | Ethereum / Solana | State-level Agriculture Minister voting | `TBD` |
+
+Contract source lives under [`/contracts`](./contracts). Deployment scripts under [`/scripts/deploy`](./scripts/deploy).
+
+```bash
+# Compile contracts
+npm run contracts:compile
+
+# Run contract tests
+npm run contracts:test
+
+# Deploy to testnet
+npm run contracts:deploy -- --network sepolia
 ```
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+## 🧪 Testing
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+npm run test          # unit tests
+npm run test:e2e       # end-to-end tests
+npm run contracts:test # smart contract tests
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
-```
+## 🗺️ Roadmap
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+- [x] Core ERD: User, Lessor, Lessee, Merchant, Tools, Crop
+- [x] `TRANSACTION` entity for on-chain payment logging
+- [x] Dark, soil-themed UI system
+- [ ] Wallet connect (MetaMask / Phantom)
+- [ ] Real-time price analytics dashboard
+- [ ] On-chain voting module (testnet)
+- [ ] Security audit of smart contracts
+- [ ] Mainnet deployment
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+---
 
-```sh
-turbo dev --filter=web
-```
+## 🤝 Contributing
 
-Without global `turbo`:
+This is currently a closed-development startup repository. If you've been granted access:
 
-```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
-```
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit with clear messages: `git commit -m "feat: add crop listing pagination"`
+3. Open a pull request against `main` with a description and testing notes.
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## 📄 License
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+Proprietary — All rights reserved, © 2026 AgriChain. *(Replace with MIT/Apache-2.0 if open-sourcing.)*
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+<div align="center">
 
-```sh
-cd my-turborepo
-turbo login
-```
+Built by **Sunny Rai** — shipping real infrastructure, not tutorials.
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+</div>
