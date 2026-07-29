@@ -30,10 +30,26 @@ const toolSchema = new Schema({
     },
 
     pricePerday : {
-        type : Schema.Types.ObjectId,
-        ref : "Category",
+        type : Number,
         required : true,
-        
+        min :0, 
+    },
+
+    pricePerHour : {
+        type:Number,
+        required : true,
+        min :0,
+    },
+
+    securityDeposit : {
+        type:Number,
+        required : true,
+        min :0,
+    },
+
+    currency:{
+        type:String,
+        default : "INR",
     },
 
     availability : {
