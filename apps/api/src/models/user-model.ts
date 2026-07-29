@@ -35,35 +35,35 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
     },
 
-    walletAdress : {
-       type:String,
-       required : [true, "WalletAddress is required for wallet connection"],
-       unique:true,
-       lowercase:true,
-       trim:true,
+    walletAdress: {
+      type: String,
+      required: [true, "WalletAddress is required for wallet connection"],
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
 
-    nonce : {
-       type:String,
+    nonce: {
+      type: String,
     },
 
-    isWalletVarified :{
-        type :Boolean,
-        default:false,
+    isWalletVarified: {
+      type: Boolean,
+      default: false,
     },
 
-    role :{
-        type :String,
-        enum : ["merchant","farmer"],
-        default : "user",
+    role: {
+      type: String,
+      enum: ["merchant", "farmer"],
+      default: "user",
     },
 
-    profileImage : {
-        type:String,
+    profileImage: {
+      type: String,
     },
 
-    bio:{
-        type : String,
+    bio: {
+      type: String,
     },
 
     refreshToken: {
@@ -84,14 +84,18 @@ userSchema.methods.isPasswordCorrect = async function (password: any) {
 
 userSchema.methods.generateAccessToken = function () {
   const secret = process.env.ACCESS_TOKEN_SECRET as string;
-  if(!secret) {
-    throw new Error("JWT_SECRET is not defined")
+  if (!secret) {
+    throw new Error("JWT_SECRET is not defined");
   }
-  const token = jwt.sign( {
-    _id :this._id,
-    email:this.email,
-    password : this.password,
-  }, secret, {expiresIn:process.env.SECRTE_TOKEN_EXPIRY as string})
+  const token = jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      password: this.password,
+    },
+    secret,
+    { expiresIn: process.env.SECRTE_TOKEN_EXPIRY as string }
+  );
 };
 
 userSchema.methods.generateRefreshToken = function () {
