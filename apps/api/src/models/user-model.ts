@@ -1,6 +1,9 @@
 import mongoose, { Schema } from "mongoose";
-import jwt from "jsonwebtoken";
+import * as jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import dotenv from "dotenv";
+
+dotenv.config({ path: "../.env" });
 
 const userSchema = new Schema(
   {
@@ -32,6 +35,37 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
     },
 
+    walletAdress : {
+       type:String,
+       required : [true, "WalletAddress is required for wallet connection"],
+       unique:true,
+       lowercase:true,
+       trim:true,
+    },
+
+    nonce : {
+       type:String,
+    },
+
+    isWalletVarified :{
+        type :Boolean,
+        default:false,
+    },
+
+    role :{
+        type :String,
+        enum : ["merchant","farmer"],
+        default : "user",
+    },
+
+    profileImage : {
+        type:String,
+    },
+
+    bio:{
+        type : String,
+    },
+
     refreshToken: {
       type: String,
     },
@@ -49,27 +83,27 @@ userSchema.methods.isPasswordCorrect = async function (password: any) {
 };
 
 userSchema.methods.generateAccessToken = function () {
+  const secret = process.env.ACCESS_TOKEN_SECRET as string;
+  if(!secret) {
+    throw new Error("JWT_SECRET is not defined")
+  }
+  const token = jwt.sign( {
+    _id :this._id,
+    email:this.email,
+    password : this.password,
+  }, secret, {expiresIn:process.env.SECRTE_TOKEN_EXPIRY as string})
+};
+
+userSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
       _id: this._id,
-      email: this.email,
-      username: this.username,
-      fullname: this.fullname,
     },
-    process.env.ACCESS_TOKEN_SECRET!,
+    process.env.REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY!,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
     }
   );
 };
 
-userSchema.methods.generateRefreshToken = function() {
-    return jwt.sign({
-        _id:this._id,
-    },
-    process.env.REFRESH_TOKEN_SECRET!,
-      {
-        expiresIn: process.env.REFRESH_TOKEN_EXPIRY!,
-      }
-)
-}
+export const User = mongoose.model("User", userSchema);
