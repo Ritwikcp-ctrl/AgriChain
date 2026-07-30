@@ -1,70 +1,66 @@
-import mongoose , {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-
-
-const toolSchema = new Schema({
-
-    owner :{
-        type :Schema.Types.ObjectId,
-        ref : "User",
+const toolSchema = new Schema(
+  {
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
 
-    name :{
-        type:Schema.Types.ObjectId,
-        ref : "Category",
-        required: true,
-        index:true,
+    name: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+      index: true,
     },
 
-    category : {
-        type:Schema.Types.ObjectId,
-        ref: "Category",
-        required : true,
-    }, 
-
-    description :{
-        type:Schema.Types.ObjectId,
-        ref : "Category",
-        required : true,
-
+    category: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
 
-    pricePerday : {
-        type : Number,
-        required : true,
-        min :0, 
+    description: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
     },
 
-    pricePerHour : {
-        type:Number,
-        required : true,
-        min :0,
+    pricePerday: {
+      type: Number,
+      required: true,
+      min: 0,
     },
 
-    securityDeposit : {
-        type:Number,
-        required : true,
-        min :0,
+    pricePerHour: {
+      type: Number,
+      required: true,
+      min: 0,
     },
 
-    currency:{
-        type:String,
-        default : "INR",
+    securityDeposit: {
+      type: Number,
+      required: true,
+      min: 0,
     },
 
-    availability : {
-        type : Schema.Types.ObjectId,
-        ref : "Category",
+    currency: {
+      type: String,
+      default: "INR",
     },
 
-    images :{
-        type:Schema.Types.ObjectId,
-        ref : "Category",
-        required : true,
+    availability: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
 
-    }
+    images: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-
-},{timestamps : true})
-
-export const Tool = mongoose.model("Tool",toolSchema);
+export const Tool = mongoose.model("Tool", toolSchema);
