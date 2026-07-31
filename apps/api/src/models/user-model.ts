@@ -15,7 +15,7 @@ const userSchema = new Schema(
       index: true,
     },
 
-    eamil: {
+    email: {
       type: String,
       required: true,
       unique: true,
