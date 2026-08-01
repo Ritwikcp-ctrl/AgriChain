@@ -1,9 +1,29 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema,Document } from "mongoose";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
+
+
+export interface IUser extends Document {
+  username: string;
+  email: string;
+  fullName: string;
+  password: string;
+  walletAdress: string;
+  nonce?: string;
+  isWalletVarified: boolean;
+  role: "user" | "merchant" | "farmer";
+  profileImage?: string;
+  bio?: string;
+  refreshToken?: string;
+
+  isPasswordCorrect(password: string): Promise<boolean>;
+  generateAccessToken(): string;
+  generateRefreshToken(): string;
+}
+
 
 const userSchema = new Schema(
   {
@@ -66,9 +86,11 @@ const userSchema = new Schema(
       type: String,
     },
 
-    refreshToken: {
-      type: String,
-    },
+    refreshToken : {
+      type : String,
+    }
+
+    
   },
   { timestamps: true }
 );
@@ -116,4 +138,4 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
-export const User = mongoose.model("User", userSchema);
+export const User = mongoose.model<IUser>("User", userSchema);
