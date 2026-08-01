@@ -87,6 +87,7 @@ userSchema.methods.generateAccessToken = function () {
   if (!secret) {
     throw new Error("JWT_SECRET is not defined");
   }
+  //The error is a function can have multiple valid signature.Typescript checks which version  you call matches.
   const token = jwt.sign(
     {
       _id: this._id,
@@ -94,7 +95,12 @@ userSchema.methods.generateAccessToken = function () {
       password: this.password,
     },
     secret,
-    { expiresIn: process.env.SECRTE_TOKEN_EXPIRY as string }
+    // { expiresIn: process.env.SECRTE_TOKEN_EXPIRY as string }//The error is here Type "string" not assignable to type "number | stringValue|undefined"
+    //what i have assigned is string but the jwt.sign() expects number | stringValue , where stringValue is a specific string format such as "1d","2h", "30m" and so on,TypeScript cannot guarantee that every string is one of those valid formats.
+    {
+      expiresIn: process.env
+        .ACCESS_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
+    }
   );
 };
 
@@ -105,7 +111,7 @@ userSchema.methods.generateRefreshToken = function () {
     },
     process.env.REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY as jwt.SignOptions['expiresIn'],
     }
   );
 };
