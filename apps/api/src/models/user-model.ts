@@ -110,7 +110,7 @@ userSchema.methods.generateAccessToken = function () {
     throw new Error("JWT_SECRET is not defined");
   }
   //The error is a function can have multiple valid signature.Typescript checks which version  you call matches.
-  const token = jwt.sign(
+   return jwt.sign(
     {
       _id: this._id,
       email: this.email,

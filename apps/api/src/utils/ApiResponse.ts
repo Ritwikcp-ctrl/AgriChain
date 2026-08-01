@@ -1,15 +1,17 @@
 class ApiResponse {
-  statusCode: Number;
-  data: null;
+  statusCode: number;
+  data: unknown;
   message: string;
-  success: Boolean;
+  success: boolean;
+  token? :string;
 
-  constructor(statusCode: number, data: object, message: string = "Success") {
+  constructor(statusCode: number, data:unknown, message: string = "Success",token?:string) {
 
     this.statusCode = statusCode;
-    this.data = null;
+    this.data = data;
     this.message = message;
-    this.success = statusCode > 400;
+    this.success = statusCode < 400;
+    this.token = token;
   }
 };
 
