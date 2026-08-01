@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import ApiError from "../utils/ApiError";
 import { User } from "../models/user-model";
 import ApiResponse from "../utils/ApiResponse";
-import { NextFunction, Request, RequestHandler, Response } from "express";
+import {  Request, RequestHandler, Response } from "express";
 import { RegisterBody } from "../utils/regiaterUserSchema";
 
 const registerUser:RequestHandler = asyncHandler(
