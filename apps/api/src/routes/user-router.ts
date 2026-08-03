@@ -4,6 +4,8 @@ import requestValidation from "../middlewares/Uservalidation";
 import { userRegisterSchema } from "../utils/regiaterUserSchema";
 import { loginUserSchema } from "../utils/loinUserSchema";
 import { loginUser } from "../controllers/user-loginControllers";
+import { verifyJwt } from "../middlewares/verifyToken";
+import { logoutUser } from "../controllers/user-logoutController";
 
 const router = Router();
 
@@ -15,5 +17,9 @@ router
     .route("/login")
     .post(requestValidation(loginUserSchema),
     loginUser);
+
+router
+    .route("/logout")
+    .post(verifyJwt,logoutUser);
 
 export default router;
