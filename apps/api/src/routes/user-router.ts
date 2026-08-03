@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { registerUser } from "../controllers/user-registerControllers";
+import { registerUser } from "../controllers/user-controllers";
+import { loginUser } from "../controllers/user-controllers";
+import { logoutUser } from "../controllers/user-controllers";
 import requestValidation from "../middlewares/Uservalidation";
 import { userRegisterSchema } from "../utils/regiaterUserSchema";
 import { loginUserSchema } from "../utils/loinUserSchema";
-import { loginUser } from "../controllers/user-loginControllers";
 import { verifyJwt } from "../middlewares/verifyToken";
-import { logoutUser } from "../controllers/user-logoutController";
+
 
 const router = Router();
 

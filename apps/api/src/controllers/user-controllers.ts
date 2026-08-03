@@ -1,0 +1,130 @@
+import { asyncHandler } from "../utils/asyncHandler";
+import ApiError from "../utils/ApiError";
+import { User } from "../models/user-model";
+import ApiResponse from "../utils/ApiResponse";
+import { Request, RequestHandler, Response, NextFunction } from "express";
+import { RegisterBody } from "../utils/regiaterUserSchema";
+import { LoginBody } from "../utils/loinUserSchema";
+import bcrypt from "bcryptjs";
+
+
+//Register
+export const registerUser: RequestHandler = asyncHandler(
+  async (req: Request<{}, {}, RegisterBody>, res: Response) => {
+    const { username, email, fullName, password } = req.body;
+
+    if (
+      [username, email, fullName, password].some(
+        (field) => field?.trim() === " "
+      )
+    ) {
+      throw new ApiError(400, "All fiels is required", []);
+    }
+
+    const existedUser = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+
+    if (existedUser) {
+      throw new ApiError(409, "User already exist", []);
+    }
+
+    const user = await User.create({
+      username: username.toLowerCase(),
+      email,
+      fullName,
+      password,
+    });
+
+    const createdUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+
+    if (!createdUser) {
+      throw new ApiError(
+        500,
+        "Something went wrong while registering user",
+        []
+      );
+    }
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, createdUser, "user  registered successfully"));
+  }
+);
+
+//Login
+export const loginUser: RequestHandler = asyncHandler(
+  async (req: Request<{}, {}, LoginBody>, res: Response) => {
+    const { email, password } = req.body;
+
+    if (!email || password) {
+      throw new ApiError(400, "Identifier and password are required", []);
+    }
+
+    const user = await User.findOne({
+      $or: [{ email, password }],
+    });
+
+    if (!user) {
+      throw new ApiError(404, "User not found", []);
+    }
+    const isPasswordCorrect = await user.isPasswordCorrect(password);
+    if (!isPasswordCorrect) {
+      throw new ApiError(401, "Invalid credential", []);
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10); // refresh token would be stored in database as it lives longer.
+
+    user.refreshToken = hashedRefreshToken; //stored in db
+
+    await user.save({
+      validateBeforeSave: false,
+    });
+
+    const loggedInUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+    if (!loggedInUser) {
+      throw new ApiError(404, "not logged in can't return the jwt", []);
+      // const errors = new ApiError(404,"not logged in ",[])
+      // console.log(errors.message)
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          201,
+          { user: loggedInUser, accessToken },
+          "user logged in successful"
+        )
+      );
+  }
+);
+
+//Logout
+export const logoutUser: RequestHandler = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const logedoutuser = req.user!;
+    logedoutuser.refreshToken = " ";
+    await logedoutuser.save({
+      validateBeforeSave: false,
+    });
+    // This is clear cookies form the browser we will do it later in login controller.so that we do logut with cookies.
+    res
+      .clearCookie("accessToken")
+      .clearCookie("refreshToken")
+
+      .json(
+        new ApiResponse(
+          200,
+          { use: logedoutuser },
+          "User is logged out successfully"
+        )
+      );
+  }
+);
