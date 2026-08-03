@@ -28,7 +28,7 @@ const loginUser: RequestHandler = asyncHandler(
 
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);// refresh token would be stored in database as it lives longer.
 
     user.refreshToken = hashedRefreshToken; //stored in db
 
