@@ -1,7 +1,7 @@
 class ApiError extends Error {
     statusCode:Number;
     success : boolean;
-    errors : any[];
+    errors? : any[];
    
 
     constructor(
