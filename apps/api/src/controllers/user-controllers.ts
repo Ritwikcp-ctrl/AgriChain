@@ -57,6 +57,8 @@ export const registerUser: RequestHandler = asyncHandler(
 //Login
 export const loginUser: RequestHandler = asyncHandler(
   async (req: Request<{}, {}, LoginBody>, res: Response) => {
+
+     
     const { email, password } = req.body;
 
     if (!email || password) {
@@ -74,6 +76,8 @@ export const loginUser: RequestHandler = asyncHandler(
     if (!isPasswordCorrect) {
       throw new ApiError(401, "Invalid credential", []);
     }
+
+     
 
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
