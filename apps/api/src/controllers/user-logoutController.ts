@@ -10,9 +10,11 @@ export const logoutUser: RequestHandler = asyncHandler(
     await logedoutuser.save({
       validateBeforeSave: false,
     });
+    // This is clear cookies form the browser we will do it later in login controller.so that we do logut with cookies.
     res
       .clearCookie("accessToken")
       .clearCookie("refreshToken")
+
       .json(
         new ApiResponse(
           200,
