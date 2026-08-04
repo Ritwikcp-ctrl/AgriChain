@@ -185,3 +185,49 @@ export const refreshAccessToken = async (
     ]);
   }
 };
+
+//current user
+export const getCurrentUser = asyncHandler(
+  async (req: Request, res: Response) => {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, req.user, "Current user fetched successfully")
+      );
+  }
+);
+
+//change password
+export const changeCurrentPassword = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { oldPassword, newPassword } = req.body;
+    if (!oldPassword || !newPassword) {
+      throw new ApiError(400, "old password and new password are required", []);
+    }
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      throw new ApiError(404, "user not found", []);
+    }
+    const isPasswordValid = await user.isPasswordCorrect(oldPassword);
+    if (!isPasswordValid) {
+      throw new ApiError(400, "old password is incorrect", []);
+    }
+
+    const isSamePassword = await user.isPasswordCorrect(newPassword);
+    if (isSamePassword) {
+      throw new ApiError(
+        400,
+        "New password must be different from the current password",
+        []
+      );
+    }
+    user.password = newPassword;
+    await user.save({
+      validateBeforeSave: false,
+    });
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "password changed successfully"));
+  }
+);
