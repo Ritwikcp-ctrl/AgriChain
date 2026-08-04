@@ -6,7 +6,7 @@ import { Request, RequestHandler, Response, NextFunction } from "express";
 import { RegisterBody } from "../utils/regiaterUserSchema";
 import { LoginBody } from "../utils/loinUserSchema";
 import bcrypt from "bcryptjs";
-
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 //Register
 export const registerUser: RequestHandler = asyncHandler(
@@ -57,8 +57,6 @@ export const registerUser: RequestHandler = asyncHandler(
 //Login
 export const loginUser: RequestHandler = asyncHandler(
   async (req: Request<{}, {}, LoginBody>, res: Response) => {
-
-     
     const { email, password } = req.body;
 
     if (!email || password) {
@@ -76,8 +74,6 @@ export const loginUser: RequestHandler = asyncHandler(
     if (!isPasswordCorrect) {
       throw new ApiError(401, "Invalid credential", []);
     }
-
-     
 
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
@@ -132,3 +128,60 @@ export const logoutUser: RequestHandler = asyncHandler(
       );
   }
 );
+
+//refreshToken
+export const refreshAccessToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const incomingRefreshToken = req.body.refreshToken;
+    if (!incomingRefreshToken) {
+      return res
+        .status(401)
+        .json(new ApiResponse(201, "Refresh token is required"));
+    }
+    const decoded = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET!
+    ) as JwtPayload;
+
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res
+        .status(401)
+        .json(new ApiResponse(201, "invalid refresh token"));
+    }
+
+    if (incomingRefreshToken !== user.refreshToken) {
+      return res
+        .status(401)
+        .json(new ApiResponse(201, "Refresh token id invalid or already used"));
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({
+      validateBeforeSave: false,
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          accessToken,
+          refreshToken,
+          "Access token renewed successfully "
+        )
+      );
+  } catch (error) {
+    throw new ApiError(201, "Invalild or expired refresh Token", [
+      "invalid",
+      "token",
+    ]);
+  }
+};
