@@ -14,7 +14,7 @@ export interface IUser extends Document {
   walletAdress: string;
   nonce?: string;
   isWalletVarified: boolean;
-  role: "user" | "merchant" | "farmer";
+  role: "user" | "merchant" | "farmer"|"lessee"|"lessor";
   profileImage?: string;
   bio?: string;
   refreshToken?: string;
@@ -74,7 +74,7 @@ const userSchema = new Schema(
 
     role: {
       type: String,
-      enum: ["merchant", "farmer"],
+      enum: ["merchant", "farmer","lesse","lessor"],
       default: "user",
     },
 
