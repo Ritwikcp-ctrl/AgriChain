@@ -231,3 +231,43 @@ export const changeCurrentPassword = asyncHandler(
       .json(new ApiResponse(200, {}, "password changed successfully"));
   }
 );
+
+//useraccount details
+export const updateAccountDetails = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { fullName, email } = req.body;
+    if (!fullName || !email) {
+      throw new ApiError(400, "Fullname and email are required", []);
+    }
+
+    const existingUser = await User.findOne({
+      email,
+      _id: { $ne: req.user?._id },
+    });
+
+    if (existingUser) {
+      throw new ApiError(409, "email is already in use", []);
+    }
+    const user = await User.findByIdAndUpdate(
+      req.user?._id,
+      {
+        $set: {//  updates only the specific fields
+          fullName,
+          email,
+        },
+      },
+      {
+        new: true,//this return the updated one
+        runValidators: true,
+      }
+    ).select("-password -refreshToken");
+
+    if (!user) {
+      throw new ApiError(404, "user not found", []);
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "Account details updated successfully"));
+  }
+);
