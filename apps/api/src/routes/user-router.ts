@@ -1,5 +1,7 @@
 import { Router } from "express";
 import {
+  changeCurrentPassword,
+  getCurrentUser,
   refreshAccessToken,
   registerUser,
 } from "../controllers/user-controllers";
@@ -21,5 +23,9 @@ router.route("/login").post(requestValidation(loginUserSchema), loginUser);
 router.route("/logout").post(verifyJwt, logoutUser);
 
 router.route("/refresh-token").post(refreshAccessToken);
+
+router.route("/current-user").post(verifyJwt,getCurrentUser);
+
+router.route("/change-password").post(verifyJwt, changeCurrentPassword);
 
 export default router;
