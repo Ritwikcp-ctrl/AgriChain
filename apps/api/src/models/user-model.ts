@@ -115,6 +115,7 @@ userSchema.methods.generateAccessToken = function () {
       _id: this._id,
       email: this.email,
       password: this.password,
+      role:this.role,
     },
     secret,
     // { expiresIn: process.env.SECRTE_TOKEN_EXPIRY as string }//The error is here Type "string" not assignable to type "number | stringValue|undefined"
