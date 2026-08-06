@@ -19,7 +19,7 @@ import {
   getCategoryById,
   updateCatogory,
 } from "../controllers/category-controller";
-import { createProduct } from "../controllers/product-controller";
+import { createProduct, getAllProducts, updateProduct } from "../controllers/product-controller";
 
 const router = Router();
 
@@ -52,5 +52,9 @@ router.route("/:updateCat").patch(verifyJwt, updateCatogory);
 router.route("/:deleteCat").delete(verifyJwt, deleteCategory);
 
 router.route("/:createProd").post(verifyJwt, createProduct);
+
+router.route("/getProd").get(getAllProducts);
+
+router.route("/:updateProd").patch(verifyJwt,updateProduct);
 
 export default router;
