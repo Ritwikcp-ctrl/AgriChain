@@ -7,7 +7,7 @@ class ApiError extends Error {
     constructor(
         statusCode :number,
         message : string = "Something went wrong",
-        error : any[],
+        error? : any[],
        
         stack :string = ""
     ){
