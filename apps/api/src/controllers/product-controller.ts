@@ -119,3 +119,23 @@ export const updateProduct = asyncHandler(
       );
   }
 );
+
+export const deleteProduct = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+
+    const product = await Products.findById(productId);
+
+    if (!product) {
+      throw new ApiError(404, "product is not found ");
+    }
+    //only the seller can delete the product
+    if (product.seller.toString() !== req.user?._id.toString()) {
+      throw new ApiError(403, "You are not authorize to delete this product  ");
+    }
+    await Products.findByIdAndDelete(productId);
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "Product delete successfully"));
+  }
+);
