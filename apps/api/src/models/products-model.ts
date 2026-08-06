@@ -42,7 +42,7 @@ const productSchema = new Schema(
         "ton",
         "bag"
       ],
-      required : true
+      required : false
     },
 
     availability: {
