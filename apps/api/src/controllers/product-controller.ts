@@ -30,7 +30,7 @@ export const createProduct = asyncHandler(
       title,
       description,
       quantity,
-      unit:"kg",
+      unit: "kg",
       price,
       category: categoryId,
       images,
@@ -38,5 +38,84 @@ export const createProduct = asyncHandler(
     return res
       .status(201)
       .json(new ApiResponse(201, product, "Product created successfully"));
+  }
+);
+
+export const getAllProducts = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const products = await Products.find()
+      .populate("seller", "fullName eamil")
+      .populate("category", "name slug");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, products, "Products fetched successfully"));
+  }
+);
+
+export const updateProduct = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { productId } = req.params;
+
+    const {
+      title,
+      description,
+      quantity,
+      unit,
+      price,
+      category: categoryId,
+      availability,
+      staus,
+      listingType,
+      images,
+    } = req.body;
+
+    const product = await Products.findById(productId);
+
+    if (!product) {
+      throw new ApiError(404, "Product not found");
+    }
+    //check ownerships
+    if (product.seller.toString() !== req.user._id.toString()) {
+      throw new ApiError(403, "you are not allowed to update this product");
+    }
+
+    //check category if it is being changed
+    if (categoryId) {
+      const existingCategory = await category.findById(categoryId);
+      if (!existingCategory) {
+        throw new ApiError(403, "category not found");
+      }
+    }
+
+    const updatedProduct = await Products.findByIdAndUpdate(
+      productId,
+      {
+        $set: {
+          title,
+          description,
+          quantity,
+          unit,
+          price,
+          category: categoryId,
+          availability,
+          status,
+          listingType,
+          images,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .populate("seller", "fullname email")
+      .populate("category", "name slug");
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, updateProduct, "Product updated successfully")
+      );
   }
 );
