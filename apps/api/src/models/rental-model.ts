@@ -1,34 +1,54 @@
 import mongoose, { Schema } from "mongoose";
-import * as jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
 
 const rentalSchema = new Schema(
   {
     tool: {
       type: Schema.Types.ObjectId,
       ref: "Tool",
+      required: true,
     },
 
     lessor: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
 
     lessee: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
 
-    price: {
+    totalprice: {
       type: Number,
-      default: "0.00rs",
-      require: true,
+
+      min: 0,
+      required: true,
     },
 
     status: {
       type: String,
-      default: false,
-      require: true,
+      enum: [
+        "pending",
+        "accepted",
+        "rejected",
+        "active",
+        "completed",
+        "cancelled",
+      ],
+      default: "pending",
+      required: true,
+    },
+
+    startDate: {
+      type: Date,
+      required: true,
+    },
+
+    endDate: {
+      type: Date,
+      required: true,
     },
   },
   { timestamps: true }
