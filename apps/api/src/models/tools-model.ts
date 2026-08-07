@@ -5,13 +5,14 @@ const toolSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required:true,
     },
 
     name: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+      type: String,
       required: true,
       index: true,
+      trim:true,
     },
 
     category: {
@@ -21,8 +22,7 @@ const toolSchema = new Schema(
     },
 
     description: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+      type:String,
       required: true,
     },
 
@@ -50,15 +50,17 @@ const toolSchema = new Schema(
     },
 
     availability: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
+      type:Boolean,
+      default:true,
     },
 
-    images: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    images: [
+          {
+            type:String
+          }
+    ],
+      
+    
   },
   { timestamps: true }
 );
