@@ -12,19 +12,8 @@ import requestValidation from "../middlewares/Uservalidation";
 import { userRegisterSchema } from "../utils/regiaterUserSchema";
 import { loginUserSchema } from "../utils/loinUserSchema";
 import { verifyJwt } from "../middlewares/verifyToken";
-import {
-  createCategory,
-  deleteCategory,
-  getAllCategories,
-  getCategoryById,
-  updateCatogory,
-} from "../controllers/category-controller";
-import {
-  createProduct,
-  deleteProduct,
-  getAllProducts,
-  updateProduct,
-} from "../controllers/product-controller";
+
+
 
 const router = Router();
 
@@ -45,23 +34,10 @@ router.route("/change-password").post(verifyJwt, changeCurrentPassword);
 
 router.route("/update-account").post(verifyJwt, updateAccountDetails);
 
-//category routers
-router.route("/:createCat").post(verifyJwt, createCategory);
 
-router.route("/:getAllcat").get(getAllCategories);
 
-router.route("/:getCatId").get(getCategoryById);
 
-router.route("/:updateCat").patch(verifyJwt, updateCatogory);
 
-router.route("/:deleteCat").delete(verifyJwt, deleteCategory);
 
-router.route("/:createProd").post(verifyJwt, createProduct);
-
-router.route("/getProd").get(getAllProducts);
-
-router.route("/:updateProd").patch(verifyJwt, updateProduct);
-
-router.route("/:deleteProd").delete(verifyJwt, deleteProduct);
 
 export default router;
