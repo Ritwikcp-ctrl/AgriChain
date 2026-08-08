@@ -7,6 +7,18 @@ const orderSchema = new Schema({
         ref : "User",
     },
 
+    seller : {
+        type:Schema.Types.ObjectId,
+        ref:"User",
+        required:true
+    },
+
+    products :{
+        type:Schema.Types.ObjectId,
+        ref:"Product",
+        required:true,
+    }
+
     
 }, { timestamps: true });
 

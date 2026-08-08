@@ -14,9 +14,10 @@ export const createProduct = asyncHandler(
       price,
       category: categoryId,
       images,
+      unit,
     } = req.body;
 
-    if (!title || !quantity || !unit || !price || !categoryId) {
+    if (!title || !quantity|| !price || !unit || !categoryId) {
       throw new ApiError(400, "All field is required ");
     }
 
@@ -65,7 +66,7 @@ export const updateProduct = asyncHandler(
       price,
       category: categoryId,
       availability,
-      staus,
+      status,
       listingType,
       images,
     } = req.body;

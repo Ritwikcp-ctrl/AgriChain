@@ -20,7 +20,7 @@ const rentalSchema = new Schema(
       required: true,
     },
 
-    totalprice: {
+    totalPrice: {
       type: Number,
 
       min: 0,
