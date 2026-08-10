@@ -170,3 +170,80 @@ export const rejectRental = asyncHandler(
   }
 );
 
+export const completeRental = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { rentalId } = req.params;
+
+    const rental = await Rental.findById(rentalId);
+    if (!rental) {
+      throw new ApiError(404, "Rental not found");
+    }
+
+    const userId = req.user?._id.toString();
+
+    const isLessor = rental.lessor.toString() === userId;
+    const isLessee = rental.lessee.toString() === userId;
+
+    if (!isLessor && !isLessee) {
+      throw new ApiError(404, "you are not allowed to complete this rental");
+    }
+
+    if (rental.status !== "accepted" && rental.status !== "active") {
+      throw new ApiError(
+        404,
+        "Only accepted or active rentals can be completed"
+      );
+    }
+
+    const tool = await Tool.findById(rental.tool);
+
+    if (!tool) {
+      throw new ApiError(404, "Tool not found");
+    }
+
+    rental.status = "completed";
+    await rental.save();
+
+    tool.availability = true;
+
+    await tool.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, rental, "rental completed successfully"));
+  }
+);
+
+export const cancelRental = asyncHandler(
+  async (req: Request, res: Response) => {
+    const { rentalId } = req.params;
+
+    const rental = await Rental.findById(rentalId);
+
+    if (!rental) {
+      throw new ApiError(404, "rental not found");
+    }
+
+    //only lessee can cancel the rental request
+    if (rental.lessee.toString() !== req.user?._is.toString()) {
+      throw new ApiError(
+        404,
+        "Only the person who requested the rental can cancel it"
+      );
+    }
+
+    //only pending rentals can be cancelled
+    if (rental.status !== "pending") {
+      throw new ApiError(
+        404,
+        `rental can not be cancelled because its status is ${rental.status}`
+      );
+    }
+    rental.status = "cancelled";
+    await rental.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, rental, "renatl cancelled successfully"));
+  }
+);
