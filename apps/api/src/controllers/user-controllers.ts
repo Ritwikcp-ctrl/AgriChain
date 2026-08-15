@@ -251,13 +251,14 @@ export const updateAccountDetails = asyncHandler(
     const user = await User.findByIdAndUpdate(
       req.user?._id,
       {
-        $set: {//  updates only the specific fields
+        $set: {
+          //  updates only the specific fields
           fullName,
           email,
         },
       },
       {
-        new: true,//this return the updated one
+        new: true, //this return the updated one
         runValidators: true,
       }
     ).select("-password -refreshToken");

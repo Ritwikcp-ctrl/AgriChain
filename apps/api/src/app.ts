@@ -12,9 +12,7 @@ app.use(
 );
 
 app.use(
-  express.json({
-    limit: "23kb",
-  })
+  express.json()
 );
 
 app.use(
@@ -34,11 +32,11 @@ import toolsRouter from "./routes/tool-routes";
 import rentalRouter from "./routes/rental-routes";
 import orderRouter from "./routes/order-routes";
 
-app.use("api/v1/users", userRouter);
-app.use("api/v1/category", categoryRouter);
-app.use("api/v1/products", productsRouter);
-app.use("api/v1/tools", toolsRouter);
-app.use("api/v1/rental", rentalRouter);
-app.use("api/v1/order", orderRouter);
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/category", categoryRouter);
+app.use("/api/v1/products", productsRouter);
+app.use("/api/v1/tools", toolsRouter);
+app.use("/api/v1/rental", rentalRouter);
+app.use("/api/v1/order", orderRouter);
 
 export default app;

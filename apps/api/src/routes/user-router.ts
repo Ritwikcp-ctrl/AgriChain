@@ -13,14 +13,15 @@ import { userRegisterSchema } from "../utils/regiaterUserSchema";
 import { loginUserSchema } from "../utils/loinUserSchema";
 import { verifyJwt } from "../middlewares/verifyToken";
 
-
+// requestValidation(userRegisterSchema),
 
 const router = Router();
 
 //user routers
 router
   .route("/register")
-  .post(requestValidation(userRegisterSchema), registerUser);
+  .post( registerUser);
+  console.log("routes are working")
 
 router.route("/login").post(requestValidation(loginUserSchema), loginUser);
 
