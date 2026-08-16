@@ -11,9 +11,7 @@ app.use(
   })
 );
 
-app.use(
-  express.json()
-);
+app.use(express.json());
 
 app.use(
   express.urlencoded({
@@ -31,6 +29,8 @@ import productsRouter from "./routes/products-route";
 import toolsRouter from "./routes/tool-routes";
 import rentalRouter from "./routes/rental-routes";
 import orderRouter from "./routes/order-routes";
+import ConversationRouter from "./routes/conversation-router";
+import messageRouter from "./routes/message-router";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -38,5 +38,7 @@ app.use("/api/v1/products", productsRouter);
 app.use("/api/v1/tools", toolsRouter);
 app.use("/api/v1/rental", rentalRouter);
 app.use("/api/v1/order", orderRouter);
+app.use("/api/v1/conversation", ConversationRouter);
+app.use("/api/v1/message",messageRouter);
 
 export default app;
