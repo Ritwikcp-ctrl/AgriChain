@@ -1,0 +1,21 @@
+
+now building connection manager this is the piece that lets your server answer, "Which Websocket connecition belongs to this use ? ",without it , authentication works , but you can't efficiently push a notification to specific buyer,farmer,and cold-storage operator.
+
+
+WebSocket connection
+        ↓
+Get token
+        ↓
+Verify JWT
+        ↓
+Get userId
+        ↓
+socket.userId = userId
+        ↓
+connectionManager.addConnection()   ← HERE
+        ↓
+Connection stays open
+        ↓
+User disconnects
+        ↓
+connectionManager.removeConnection()
