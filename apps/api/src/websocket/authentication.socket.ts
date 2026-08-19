@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocket } from "ws";
 
 import { Server } from "http";
 import jwt from "jsonwebtoken";
+import { connectionManager } from "./connectionManager";
 
 interface AuthenticatedWebSocket extends WebSocket {
   userId?: string;
@@ -36,6 +37,8 @@ export const initializeWebSocket = (server: Server) => {
 
       socket.userId = decoded._id;
 
+      connectionManager.addConnection(socket.userId, socket);
+
       console.log(`user ${socket.userId} connected through websocket`);
 
       socket.send(
@@ -56,7 +59,9 @@ export const initializeWebSocket = (server: Server) => {
     });
 
     socket.on("close", () => {
-      console.log(`User ${socket.userId} disconnected`);
+      if (socket.userId) {
+        connectionManager.removeConnection(socket.userId);
+      }
     });
 
     socket.on("error", (error) => {
