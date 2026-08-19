@@ -31,6 +31,7 @@ import rentalRouter from "./routes/rental-routes";
 import orderRouter from "./routes/order-routes";
 import ConversationRouter from "./routes/conversation-router";
 import messageRouter from "./routes/message-router";
+import broadcastRouter from "./routes/cropBroadcast-routes";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -40,5 +41,6 @@ app.use("/api/v1/rental", rentalRouter);
 app.use("/api/v1/order", orderRouter);
 app.use("/api/v1/conversation", ConversationRouter);
 app.use("/api/v1/message",messageRouter);
+app.use("/api/v1/broadcast",broadcastRouter)
 
 export default app;
