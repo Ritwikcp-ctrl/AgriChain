@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Conversation } from "../models/conversation-model";
-import { Transection } from "../models/trasection-model";
+import { Transaction } from "../models/trasection-model";
 import { asyncHandler } from "../utils/asyncHandler";
 import ApiError from "../utils/ApiError";
 import ApiResponse from "../utils/ApiResponse";
@@ -12,7 +12,7 @@ export const createConversation = asyncHandler(
     if (!transactionId) {
       return new ApiError(404, "invalid transactionId");
     }
-    const transaction = await Transection.findById(transactionId);
+    const transaction = await Transaction.findById(transactionId);
     if (!transaction) {
       return new ApiError(404, "transaction not found");
     }

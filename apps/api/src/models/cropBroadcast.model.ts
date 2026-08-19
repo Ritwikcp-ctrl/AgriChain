@@ -1,5 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
+
+
 const cropBroadcastSchema = new Schema(
   {
     farmer: {
@@ -11,6 +13,7 @@ const cropBroadcastSchema = new Schema(
     product: {
       type: Schema.Types.ObjectId,
       ref: "Products",
+      required : true,
     },
 
     quantity: {

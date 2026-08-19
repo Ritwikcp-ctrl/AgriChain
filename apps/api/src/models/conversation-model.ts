@@ -1,11 +1,12 @@
-import mongoose, { Document, mongo, Schema, Types } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IConversation extends Document {
   participants: Types.ObjectId[];
+  broadcastId: Types.ObjectId;
   cropId: Types.ObjectId;
   transactionId?: Types.ObjectId;
   status: "active" | "closed";
-  createedAt: Date;
+  createdAt: Date;
   updatedAt: Date;
 }
 
@@ -19,16 +20,21 @@ const conversationSchema = new Schema<IConversation>(
       },
     ],
 
+    broadcastId: {
+      type: Schema.Types.ObjectId,
+      ref: "CropBroadcast",
+      required: true,
+    },
+
     cropId: {
       type: Schema.Types.ObjectId,
-      ref: "Crop",
+      ref: "Products",
       required: true,
     },
 
     transactionId: {
       type: Schema.Types.ObjectId,
       ref: "Transaction",
-      required: true,
     },
 
     status: {
@@ -37,7 +43,9 @@ const conversationSchema = new Schema<IConversation>(
       default: "active",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export const Conversation = mongoose.model<IConversation>(

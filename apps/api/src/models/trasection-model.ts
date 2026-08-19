@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
+
 export interface ITransaction extends Document {
   buyerId: Types.ObjectId;
   farmerId: Types.ObjectId;
@@ -6,12 +7,12 @@ export interface ITransaction extends Document {
   quantity: number;
   pricePerUnit: number;
   totalAmount: number;
-  status: "pending" | "confirmed" | "completed" | "cacelled";
+  status: "pending" | "confirmed" | "completed" | "cancelled";
   createdAt: Date;
-  updateAt: Date;
+  updatedAt: Date;
 }
 
-const trasactionSchema = new Schema<ITransaction>(
+const transactionSchema = new Schema<ITransaction>(
   {
     buyerId: {
       type: Schema.Types.ObjectId,
@@ -27,13 +28,14 @@ const trasactionSchema = new Schema<ITransaction>(
 
     cropId: {
       type: Schema.Types.ObjectId,
-      ref: "Crop",
+      ref: "Products",
       required: true,
     },
+
     quantity: {
       type: Number,
       required: true,
-      min: 0,
+      min: 1,
     },
 
     pricePerUnit: {
@@ -50,14 +52,22 @@ const trasactionSchema = new Schema<ITransaction>(
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "completed", "cancelled"],
+      enum: [
+        "pending",
+        "confirmed",
+        "completed",
+        "cancelled",
+      ],
       default: "pending",
+      required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-export const Transection = mongoose.model<ITransaction>(
+export const Transaction = mongoose.model<ITransaction>(
   "Transaction",
-  trasactionSchema
+  transactionSchema
 );
