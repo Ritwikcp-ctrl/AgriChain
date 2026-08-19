@@ -1,10 +1,9 @@
-import mongoose, { Schema,Document } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import * as jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 
 dotenv.config({ path: "../.env" });
-
 
 export interface IUser extends Document {
   username: string;
@@ -14,7 +13,7 @@ export interface IUser extends Document {
   walletAdress: string;
   nonce?: string;
   isWalletVarified: boolean;
-  role: "user" | "merchant" | "farmer"|"lessee"|"lessor";
+  role: "user" | "buyer" | "farmer" | "lessee" | "lessor" | "cold_storage";
   profileImage?: string;
   bio?: string;
   refreshToken?: string;
@@ -23,7 +22,6 @@ export interface IUser extends Document {
   generateAccessToken(): string;
   generateRefreshToken(): string;
 }
-
 
 const userSchema = new Schema(
   {
@@ -72,12 +70,10 @@ const userSchema = new Schema(
       default: false,
     },
 
-    role: {
-      type: String,
-      enum: ["merchant", "farmer","lesse","lessor"],
-      default: "user",
+    role :{
+      type : String,
+      enum:["user","farmer","buyer","lessor","lessee","cold_storage"]
     },
-
     profileImage: {
       type: String,
     },
@@ -86,14 +82,25 @@ const userSchema = new Schema(
       type: String,
     },
 
-    refreshToken : {
-      type : String,
-    }
+    refreshToken: {
+      type: String,
+    },
 
-    
+    location: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: { type: [Number], required: true },
+    },
   },
   { timestamps: true }
 );
+
+userSchema.index({
+  location: "2dsphere",
+});
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
@@ -101,7 +108,7 @@ userSchema.pre("save", async function () {
 });
 
 userSchema.methods.isPasswordCorrect = async function (password: string) {
- return await bcrypt.compare(password, this.password);
+  return await bcrypt.compare(password, this.password);
 };
 
 userSchema.methods.generateAccessToken = function () {
@@ -110,12 +117,12 @@ userSchema.methods.generateAccessToken = function () {
     throw new Error("JWT_SECRET is not defined");
   }
   //The error is a function can have multiple valid signature.Typescript checks which version  you call matches.
-   return jwt.sign(
+  return jwt.sign(
     {
       _id: this._id,
       email: this.email,
       password: this.password,
-      role:this.role,
+      role: this.role,
     },
     secret,
     // { expiresIn: process.env.SECRTE_TOKEN_EXPIRY as string }//The error is here Type "string" not assignable to type "number | stringValue|undefined"
@@ -134,7 +141,8 @@ userSchema.methods.generateRefreshToken = function () {
     },
     process.env.REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY as jwt.SignOptions['expiresIn'],
+      expiresIn: process.env
+        .REFRESH_TOKEN_EXPIRY as jwt.SignOptions["expiresIn"],
     }
   );
 };
