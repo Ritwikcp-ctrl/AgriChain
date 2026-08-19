@@ -29,7 +29,7 @@ class ConnectionManager {
     }
 
     if (socket.readyState !== WebSocket.OPEN) {
-      console.log(`scoket for ${userId} is not open `);
+      console.log(`socket for ${userId} is not open `);
     }
 
     socket.send(JSON.stringify(data));
