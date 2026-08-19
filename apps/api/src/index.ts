@@ -3,7 +3,7 @@ import app from "./app";
 import connectDB from "./db";
 import path from "path";
 import http from "http";
-import { initializeWebSocket } from "./websocket/chat.socket";
+import { initializeWebSocket } from "./websocket/authentication.socket";
 
 dotenv.config({
   path: path.resolve(__dirname, "../.env"),
