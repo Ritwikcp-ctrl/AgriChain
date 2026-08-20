@@ -3,6 +3,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { Server } from "http";
 import jwt from "jsonwebtoken";
 import { connectionManager } from "./connectionManager";
+import { handleMessage } from "./message.handler";
 
 interface AuthenticatedWebSocket extends WebSocket {
   userId?: string;
@@ -54,8 +55,8 @@ export const initializeWebSocket = (server: Server) => {
       return;
     }
 
-    socket.on("message", (message) => {
-      console.log(`Message from ${socket.userId}: `, message.toString());
+    socket.on("message", async(rawMessage) => {
+      await handleMessage(socket,rawMessage)
     });
 
     socket.on("close", () => {
