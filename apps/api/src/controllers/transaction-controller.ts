@@ -148,4 +148,42 @@ export const confirmTransaction = asyncHandler(
   }
 );
 
+export const cancelTransaction = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { transactionId } = req.params;
+
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const transaction = await Transaction.findById(transactionId);
+
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    const userId = req.user._id.toString();
+
+    const isBuyer = transaction.buyerId.toString() === userId;
+
+    const isFarmer = transaction.farmerId.toString() === userId;
+
+    if (!isBuyer && !isFarmer) {
+      throw new ApiError(
+        400,
+        `Transaction canot be cancelled because its satus is ${transaction.status}`
+      );
+    }
+
+    transaction.status = "cancelled";
+
+    await transaction.save();
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction cancelled successfully")
+      );
+  }
+);
+
 
