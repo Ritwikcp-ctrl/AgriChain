@@ -33,6 +33,7 @@ import ConversationRouter from "./routes/conversation-router";
 import messageRouter from "./routes/message-router";
 import broadcastRouter from "./routes/cropBroadcast-routes";
 import broadcastRequestRouter from "./routes/broadcastRequest-routes";
+import transactionRouter from "./routes/transaction-routes";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -44,5 +45,6 @@ app.use("/api/v1/conversation", ConversationRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/broadcast", broadcastRouter);
 app.use("/api/v1/crop-broadcast", broadcastRequestRouter);
+app.use("/api/v1/transaction",transactionRouter)
 
 export default app;
