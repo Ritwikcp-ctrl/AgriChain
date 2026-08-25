@@ -34,6 +34,7 @@ import messageRouter from "./routes/message-router";
 import broadcastRouter from "./routes/cropBroadcast-routes";
 import broadcastRequestRouter from "./routes/broadcastRequest-routes";
 import transactionRouter from "./routes/transaction-routes";
+import confirmtransactionRouter from "./routes/transaction-routes"
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -46,5 +47,6 @@ app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/broadcast", broadcastRouter);
 app.use("/api/v1/crop-broadcast", broadcastRequestRouter);
 app.use("/api/v1/transaction",transactionRouter)
+app.use("/api/v1/confirmTran",confirmtransactionRouter);
 
 export default app;

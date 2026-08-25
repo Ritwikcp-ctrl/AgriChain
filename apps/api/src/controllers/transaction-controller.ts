@@ -8,7 +8,6 @@ import { asyncHandler } from "../utils/asyncHandler";
 import ApiError from "../utils/ApiError";
 import ApiResponse from "../utils/ApiResponse";
 
-
 export const createTransaction = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { conversationId, quantity, pricePerUnit } = req.body;
@@ -111,4 +110,42 @@ export const createTransaction = asyncHandler(
       );
   }
 );
+
+export const confirmTransaction = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { transactionId } = req.params;
+
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const transaction = await Transaction.findById(transactionId);
+
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    if (transaction.farmerId.toString() !== req.user._id.toStrig()) {
+      throw new ApiError(404, "Only the farmer can confirm this transaction");
+    }
+
+    if (transaction.status !== "pending") {
+      throw new ApiError(
+        400,
+        `Transaction cannot be confirmed because its satatus is ${transaction.status}`
+      );
+    }
+
+    transaction.status = "confirmed";
+
+    await transaction.save();
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction confirmed successfully")
+      );
+  }
+);
+
 
