@@ -36,6 +36,7 @@ import broadcastRequestRouter from "./routes/broadcastRequest-routes";
 import transactionRouter from "./routes/transaction-routes";
 import confirmtransactionRouter from "./routes/transaction-routes";
 import cancelTranRouter from "./routes/transaction-routes";
+import transactionIdRouter from "./routes/transaction-routes";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -50,5 +51,6 @@ app.use("/api/v1/crop-broadcast", broadcastRequestRouter);
 app.use("/api/v1/transaction", transactionRouter);
 app.use("/api/v1/confirmTran", confirmtransactionRouter);
 app.use("/api/v1/cancelTrans", cancelTranRouter);
+app.use("/api/v1/transactionComplete", transactionIdRouter);
 
 export default app;

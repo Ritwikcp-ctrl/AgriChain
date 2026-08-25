@@ -186,4 +186,48 @@ export const cancelTransaction = asyncHandler(
   }
 );
 
+export const completeTransaction = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { transactionId } = req.params;
 
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const transaction = await Transaction.findById(transactionId);
+
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    const userId = req.user._id.toString();
+
+    const isBuyer = transaction.buyerId.toString() === userId;
+
+    const isFarmer = transaction.farmerId.toString() === userId;
+
+    if (!isBuyer && !isFarmer) {
+      throw new ApiError(
+        400,
+        "You are not authorized to complete this transaction"
+      );
+    }
+
+    if (transaction.status !== "confirmed") {
+      throw new ApiError(
+        400,
+        `Transaction cannot be completed because its stauts is ${transaction.status}`
+      );
+    }
+
+    transaction.status = "completed";
+
+    await transaction.save();
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction completed successfully")
+      );
+  }
+);
