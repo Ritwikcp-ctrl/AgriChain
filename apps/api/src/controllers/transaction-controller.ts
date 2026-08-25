@@ -231,3 +231,59 @@ export const completeTransaction = asyncHandler(
       );
   }
 );
+
+export const getTransactions = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const userId = req.user._id;
+    const transactions = await Transaction.find({
+      $or: [{ buyerId: userId }, { farmerId: userId }],
+    })
+      .populate("buyerId", "fullname email")
+      .populate("farmerId", "fullname email")
+      .populate("cropId")
+      .sort({ createdAt: -1 });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, transactions, "Transactions fetched successfully")
+      );
+  }
+);
+
+export const getTransactionById = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { transactionId } = req.params;
+
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    const transaction = await Transaction.findById(transactionId)
+      .populate("buyerId", "fullname email")
+      .populate("farmerId", "fullname email")
+      .populate("cropId");
+
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    const userId = req.user._id.toString();
+    const isBuyer = transaction.buyerId._id.toString() === userId;
+    const isFarmer = transaction.farmerId._id.toString() === userId;
+
+    if (!isBuyer && !isFarmer) {
+      throw new ApiError(404, "You are not authorized to view transaction ");
+    }
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, transaction, "Transaction fetched successfully")
+      );
+  }
+);
