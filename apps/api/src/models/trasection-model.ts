@@ -4,6 +4,7 @@ export interface ITransaction extends Document {
   buyerId: Types.ObjectId;
   farmerId: Types.ObjectId;
   cropId: Types.ObjectId;
+  broadcastId: Types.ObjectId;
   quantity: number;
   pricePerUnit: number;
   totalAmount: number;
@@ -52,13 +53,14 @@ const transactionSchema = new Schema<ITransaction>(
 
     status: {
       type: String,
-      enum: [
-        "pending",
-        "confirmed",
-        "completed",
-        "cancelled",
-      ],
+      enum: ["pending", "confirmed", "completed", "cancelled"],
       default: "pending",
+      required: true,
+    },
+
+    broadcastId: {
+      type: Schema.Types.ObjectId,
+      ref: "CropBroadcast",
       required: true,
     },
   },
