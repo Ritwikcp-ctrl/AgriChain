@@ -14,6 +14,7 @@ export interface IPayment extends Document {
 
   providerPaymentId?: string;
   providerOrderId?: string;
+  providerSignature?: string;
 
   paidAt?: Date;
   createdAt: Date;
@@ -71,6 +72,10 @@ const paymentSchema = new Schema<IPayment>(
     },
 
     providerOrderId: {
+      type: String,
+    },
+
+    providerSignature: {
       type: String,
     },
 

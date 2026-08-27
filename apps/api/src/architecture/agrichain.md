@@ -92,4 +92,39 @@
                       (Images, PDFs, Certificates)
 
 
-```                      
+```             
+
+```
+          final payment flow :-
+
+Transaction
+   ↓
+POST /payments
+   ↓
+Create Razorpay Order
+   ↓
+Payment.status = pending
+   ↓
+Frontend opens Razorpay Checkout
+   ↓
+User pays
+   ↓
+Razorpay returns:
+payment_id
+order_id
+signature
+   ↓
+POST /payments/verify
+   ↓
+Server generates HMAC
+   ↓
+Compare signatures
+   ↓
+Valid
+   ↓
+Payment.status = paid
+
+```
+
+
+ #### For production, the next step is a Razorpay webhook so your backend can independently reconcile payment status rather than relying only on the browser callback. Razorpay documents webhooks and payment-status verification as part of the integration flow
