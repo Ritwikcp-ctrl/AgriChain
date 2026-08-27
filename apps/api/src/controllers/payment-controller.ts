@@ -85,4 +85,7 @@ export const createPayment = asyncHandler(
   }
 );
 /* Razorpay's current documentation says the server should create an order for every payment and pass the returned order_id to checkout; the order amount is in currency subunits
+
+
+verifyPayment() is the next controller. The important security rule is that the server must verify Razorpay's signature before marking your payment as paid. Razorpay documents the signature as HMAC-SHA256 over the server-side Razorpay order_id and the returned payment_id; it also recommends using the order_id stored by your server rather than trusting the browser's copy.
  */
