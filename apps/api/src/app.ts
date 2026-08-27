@@ -39,6 +39,7 @@ import cancelTranRouter from "./routes/transaction-routes";
 import transactionIdRouter from "./routes/transaction-routes";
 import allTransactiontRouter from "./routes/transaction-routes";
 import getTransactionIdRouter from "./routes/transaction-routes";
+import createPaymentRouter from "./routes/payment-routes";
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/category", categoryRouter);
@@ -56,5 +57,6 @@ app.use("/api/v1/cancelTrans", cancelTranRouter);
 app.use("/api/v1/transactionComplete", transactionIdRouter);
 app.use("/api/v1/getTrans", allTransactiontRouter);
 app.use("/api/v1/transactionId", getTransactionIdRouter);
+app.use("/api/v1/Createpayment", createPaymentRouter);
 
 export default app;
