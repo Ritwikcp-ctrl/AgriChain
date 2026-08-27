@@ -1,4 +1,5 @@
 import { application, NextFunction, Request, Response } from "express";
+import crypto from "crypto";
 
 import { Payment } from "../models/payment-model";
 import { Transaction } from "../models/trasection-model";
@@ -6,6 +7,7 @@ import { razorpay } from "../services/razortpay";
 import { asyncHandler } from "../utils/asyncHandler";
 import ApiError from "../utils/ApiError";
 import ApiResponse from "../utils/ApiResponse";
+import API from "razorpay/dist/types/api";
 
 export const createPayment = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -89,3 +91,87 @@ export const createPayment = asyncHandler(
 
 verifyPayment() is the next controller. The important security rule is that the server must verify Razorpay's signature before marking your payment as paid. Razorpay documents the signature as HMAC-SHA256 over the server-side Razorpay order_id and the returned payment_id; it also recommends using the order_id stored by your server rather than trusting the browser's copy.
  */
+export const verifyPayment = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { paymentId, razorpayOrderId, razorpay_signature } = req.body;
+
+    if (!req.user) {
+      throw new ApiError(401, "Unauthorized");
+    }
+
+    if (!paymentId || !razorpayOrderId || !razorpay_signature) {
+      throw new ApiError(400, "Razorpay payment details are required ");
+    }
+
+    const payment = await Payment.findOne({
+      providerOrderId: razorpayOrderId,
+    });
+
+    if (!payment) {
+      throw new ApiError(404, "Payment record not found");
+    }
+
+    //only the payer can verify this payment
+    if (payment.payerId.toString() !== req.user._id.toString()) {
+      throw new ApiError(402, "You are not authorize to verify this payment");
+    }
+
+    const transaction = await Transaction.findById(payment.transactionId);
+
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    if (payment.status === "paid") {
+      return res
+        .status(200)
+        .json(new ApiResponse(200, payment, "Payment id already verified"));
+    }
+
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!secret) {
+      throw new ApiError(500, "Razorpay secret is not configured");
+    }
+
+    const body = `${payment.providerOrderId}|${paymentId}`;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", secret)
+      .update(body)
+      .digest("hex");
+
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+    const receivedBuffer = Buffer.from(razorpay_signature, "hex");
+
+    if (expectedBuffer.length !== receivedBuffer.length) {
+      throw new ApiError(400, "Invalid payment signature");
+    }
+
+    const signatureValid = crypto.timingSafeEqual(
+      expectedBuffer,
+      receivedBuffer
+    );
+
+    if (!signatureValid) {
+      payment.status = "failed";
+
+      await payment.save();
+      throw new ApiError(400, "Payment signature verification failed");
+    }
+
+    //payment is authentic
+
+    payment.status = "paid";
+    payment.providerPaymentId = paymentId;
+    payment.providerOrderId = razorpayOrderId;
+    payment.providerSignature = razorpay_signature;
+
+    await payment.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, payment, "payment verified successfully"));
+  }
+);
