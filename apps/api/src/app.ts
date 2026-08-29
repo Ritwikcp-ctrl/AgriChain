@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-
+import paymentWebhookRouter from  "./routes/paymentWebhook-routes";
 const app = express();
 
 app.use(
@@ -9,6 +9,19 @@ app.use(
     origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
+);
+
+/*
+Razorpay webhook 
+Must receive rew body
+ */
+
+app.use(
+  "/api/v1/webhooks",
+  express.raw({
+    type: "application/json",
+  }),
+  paymentWebhookRouter
 );
 
 app.use(express.json());

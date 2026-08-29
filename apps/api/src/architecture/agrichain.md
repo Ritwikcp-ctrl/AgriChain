@@ -128,3 +128,33 @@ Payment.status = paid
 
 
  #### For production, the next step is a Razorpay webhook so your backend can independently reconcile payment status rather than relying only on the browser callback. Razorpay documents webhooks and payment-status verification as part of the integration flow
+
+
+
+# your payment architecture is:frontend is no longer the final authority,
+ ```
+                  Transaction
+                     │
+                     ▼
+              createPayment()
+                     │
+                     ▼
+              Razorpay Order
+                     │
+                     ▼
+              Razorpay Checkout
+                     │
+              ┌──────┴──────┐
+              ▼             ▼
+        Frontend         Razorpay
+        callback          webhook
+              │             │
+              ▼             ▼
+        verifyPayment    verify webhook
+              │             │
+              └──────┬──────┘
+                     ▼
+                Payment
+              status = paid
+
+```
