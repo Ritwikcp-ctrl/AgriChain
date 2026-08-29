@@ -34,6 +34,7 @@ export const registerUser: RequestHandler = asyncHandler(
       email,
       fullName,
       password,
+      
     });
 
     const createdUser = await User.findById(user._id).select(

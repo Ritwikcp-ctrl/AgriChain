@@ -55,7 +55,7 @@ const userSchema = new Schema(
 
     walletAdress: {
       type: String,
-      required: [true, "WalletAddress is required for wallet connection"],
+      required: [false, "WalletAddress is required for wallet connection"],
       unique: true,
       lowercase: true,
       trim: true,
@@ -90,17 +90,17 @@ const userSchema = new Schema(
       type: {
         type: String,
         enum: ["Point"],
-        default: "Point",
+        // default: "Point",
       },
-      coordinates: { type: [Number], required: true },
+      coordinates: { type: [Number]  },
     },
   },
   { timestamps: true }
 );
 
-userSchema.index({
+ userSchema.index({
   location: "2dsphere",
-});
+ });
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
