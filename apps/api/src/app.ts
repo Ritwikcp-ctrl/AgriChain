@@ -26,6 +26,13 @@ app.use(
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log("METHOD:", req.method);
+  console.log("URL:", req.url);
+  console.log("BODY:", req.body);
+  next();
+});
+
 app.use(
   express.urlencoded({
     extended: true,

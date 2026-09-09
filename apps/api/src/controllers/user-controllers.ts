@@ -58,7 +58,11 @@ export const registerUser: RequestHandler = asyncHandler(
 //Login
 export const loginUser: RequestHandler = asyncHandler(
   async (req: Request<{}, {}, LoginBody>, res: Response) => {
+    console.log("Body :",req.body);
     const { email, password } = req.body;
+
+    console.log("EMAIL:", email);
+console.log("PASSWORD:", password);
 
     if (!email || password) {
       throw new ApiError(400, "Identifier and password are required", []);

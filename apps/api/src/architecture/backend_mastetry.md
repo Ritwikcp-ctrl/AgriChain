@@ -106,3 +106,29 @@ This phase is where "knows backend" becomes "kicks ass at backend." Nobody skips
 
 ## Sequencing Rule
 Don't jump phases. Each one exposes the failure mode the next phase fixes. Skipping Phase 3 (DB internals) means Phase 5 (system design) is cargo-culting terms without knowing why they matter.
+
+
+
+
+
+
+
+# Question : Next, rebuild the HTTP/1.1 server from a blank file without looking at the previous code.
+
+Your target is only:
+
+TCP connection
+   ↓
+receive bytes
+   ↓
+buffer
+   ↓
+detect \r\n\r\n
+   ↓
+parse request
+   ↓
+send HTTP response
+   ↓
+keep connection alive
+
+Once you can write that yourself and explain why each part exists, move to the request queue + /slow vs /fast head-of-line blocking experiment.

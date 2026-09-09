@@ -53,13 +53,13 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
     },
 
-    walletAdress: {
+   walletAdress: {
       type: String,
-      required: [false, "WalletAddress is required for wallet connection"],
-      unique: true,
-      lowercase: true,
-      trim: true,
-    },
+    //   // required: [false, "WalletAddress is required for wallet connection"],
+    //   // unique: true,
+    //   // lowercase: true,
+    //   // trim: true,
+     },
 
     nonce: {
       type: String,
@@ -100,6 +100,7 @@ const userSchema = new Schema(
 
  userSchema.index({
   location: "2dsphere",
+  
  });
 
 userSchema.pre("save", async function () {
