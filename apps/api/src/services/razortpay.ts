@@ -13,4 +13,4 @@ export const razorpay = new Razorpay({
   
 });
 
-console.log('RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);
+// console.log('RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);

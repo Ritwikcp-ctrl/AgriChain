@@ -4,11 +4,7 @@ import { ZodObject, ZodError } from "zod";
 const requestValidation =
   (schema: ZodObject) => (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse({
-        body: req.body,
-        params: req.params,
-        query: req.query,
-      });
+      schema.parse(req.body);
 
       next();
     } catch (error) {

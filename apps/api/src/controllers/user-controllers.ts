@@ -64,12 +64,12 @@ export const loginUser: RequestHandler = asyncHandler(
     console.log("EMAIL:", email);
 console.log("PASSWORD:", password);
 
-    if (!email || password) {
+    if (!email || !password) {
       throw new ApiError(400, "Identifier and password are required", []);
     }
 
     const user = await User.findOne({
-      $or: [{ email, password }],
+      $or: [{ email}],
     });
 
     if (!user) {
