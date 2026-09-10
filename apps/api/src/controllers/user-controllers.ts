@@ -11,14 +11,14 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 //Register
 export const registerUser: RequestHandler = asyncHandler(
   async (req: Request<{}, {}, RegisterBody>, res: Response) => {
-    const { username, email, fullName, password } = req.body;
+    const { username, email, fullName, password,role } = req.body;
 
     if (
-      [username, email, fullName, password].some(
+      [username, email, fullName, password,role].some(
         (field) => field?.trim() === " "
       )
     ) {
-      throw new ApiError(400, "All fiels is required", []);
+      throw new ApiError(400, "All input is required", []);
     }
 
     const existedUser = await User.findOne({
@@ -34,6 +34,7 @@ export const registerUser: RequestHandler = asyncHandler(
       email,
       fullName,
       password,
+      
       
     });
 
