@@ -72,7 +72,8 @@ const userSchema = new Schema(
 
     role :{
       type : String,
-      enum:["user","farmer","buyer","lessor","lessee","cold_storage"]
+      enum:["farmer","buyer","cold_storage"],
+      required:true,
     },
     profileImage: {
       type: String,
