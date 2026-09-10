@@ -6,6 +6,7 @@ export const userRegisterSchema = z.object({
    
     username : z.string(),
     fullName :z.string(),
+    role: z.enum(["farmer","buyer","cold_storage","transporter",]),
 });
 
 export type RegisterBody = z.infer<typeof userRegisterSchema>;
