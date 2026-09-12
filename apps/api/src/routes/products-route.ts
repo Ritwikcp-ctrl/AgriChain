@@ -10,12 +10,12 @@ import {
 
 const router = Router();
 
-router.route("/:createProd").post(verifyJwt, createProduct);
+router.route("/createProd").post(verifyJwt, createProduct);
 
 router.route("/getProd").get(getAllProducts);
 
-router.route("/:updateProd").patch(verifyJwt, updateProduct);
+router.route("/updateProd").patch(verifyJwt, updateProduct);
 
-router.route("/:deleteProd").delete(verifyJwt, deleteProduct);
+router.route("/deleteProd").delete(verifyJwt, deleteProduct);
 
 export default router

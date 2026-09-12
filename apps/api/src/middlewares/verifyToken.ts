@@ -32,6 +32,7 @@ const verifyJwt = async (req: Request, res: Response, next: NextFunction) => {
     // i could return this , but insted i attach it to the request.Because the same rquest is still travelling through express.
     next();
   } catch (error) {
+    console.log("JWT ERROR:", error);
     throw new ApiError(201, "Access token expired or invalid", [
       "token",
       "expred or invaild",
