@@ -8,7 +8,7 @@ const verifyJwt = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token =
       req.cookies?.accessToken ||
-      req.header("Authorization")?.replace("Bearer", " ");
+      req.header("Authorization")?.replace("Bearer", "");
 
     if (!token) {
       return res
