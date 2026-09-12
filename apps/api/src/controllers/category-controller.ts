@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 
 export const createCategory = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, slug, price, description, image, icon } = req.body;
+    const { name, slug, price, description } = req.body;
 
     if (!name || !slug || !price) {
       throw new ApiError(201, "All field is required ");
@@ -19,13 +19,11 @@ export const createCategory = asyncHandler(
       throw new ApiError(201, "Category already exists");
     }
 
-    const newCategory = await category.create({
+    const newCategory:any = await category.create({
       name,
       slug,
       description,
       price,
-      image,
-      icon,
     });
     return res
       .status(200)

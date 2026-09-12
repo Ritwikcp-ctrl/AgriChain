@@ -13,7 +13,6 @@ export const createProduct = asyncHandler(
       quantity,
       price,
       category: categoryId,
-      images,
       unit,
     } = req.body;
 
@@ -34,7 +33,7 @@ export const createProduct = asyncHandler(
       unit: "kg",
       price,
       category: categoryId,
-      images,
+      
     });
     return res
       .status(201)
